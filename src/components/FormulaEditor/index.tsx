@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import useStore from "../../store/useFormulaStore";
 import "./styles.css";
 
 interface Suggestion {
@@ -11,12 +12,8 @@ interface Suggestion {
 }
 
 const FormulaEditor = () => {
+  const { searchTerm, cursorPos, showDropdown, activeDropdown, originalNames, setSearchTerm, setCursorPos, setShowDropdown, setActiveDropdown, setOriginalNames, resetDropdowns } = useStore();
   const editorRef = useRef<HTMLDivElement>(null);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
-  const [originalNames, setOriginalNames] = useState<Record<string, string>>({});
 
   const { data: suggestions = [] } = useQuery({
     queryKey: ["autocomplete"],
@@ -28,6 +25,14 @@ const FormulaEditor = () => {
   });
 
   const filteredSuggestions = suggestions.filter((item) => item.category.toLowerCase().includes(searchTerm.toLowerCase()));
+
+  useEffect(() => {
+    document.addEventListener("click", resetDropdowns);
+
+    return () => {
+      document.removeEventListener("click", resetDropdowns);
+    };
+  }, []);
 
   const handleInput = () => {
     if (!editorRef.current) {
@@ -109,16 +114,6 @@ const FormulaEditor = () => {
     }
   };
 
-  const closeDropdowns = () => setActiveDropdown(null);
-
-  useEffect(() => {
-    document.addEventListener("click", closeDropdowns);
-
-    return () => {
-      document.removeEventListener("click", closeDropdowns);
-    };
-  }, []);
-
   const handleCalculate = () => {
     if (!editorRef.current) {
       return;
@@ -173,7 +168,7 @@ const FormulaEditor = () => {
 
   return (
     <div style={{ position: "relative", width: "100%", maxWidth: 500 }}>
-      <div ref={editorRef} className="formula-editor" contentEditable onInput={handleInput} onKeyUp={() => handleInput()} />
+      <div ref={editorRef} className="formula-editor" contentEditable onInput={handleInput} onKeyUp={handleInput} />
 
       {showDropdown && filteredSuggestions.length > 0 && (
         <ul className="suggestion-menu" style={{ top: cursorPos.y + window.scrollY, left: cursorPos.x + window.scrollX }}>
@@ -203,7 +198,7 @@ const FormulaEditor = () => {
             className="action-menu-item"
             onClick={() => {
               replaceNameInTag(activeDropdown, "Action 1");
-              closeDropdowns();
+              resetDropdowns();
             }}
           >
             Action 1
@@ -212,7 +207,7 @@ const FormulaEditor = () => {
             className="action-menu-item"
             onClick={() => {
               replaceNameInTag(activeDropdown, "Action 2");
-              closeDropdowns();
+              resetDropdowns();
             }}
           >
             Action 2
@@ -223,7 +218,7 @@ const FormulaEditor = () => {
               className="action-menu-item original-name"
               onClick={() => {
                 replaceNameInTag(activeDropdown, originalNames[activeDropdown]);
-                closeDropdowns();
+                resetDropdowns();
               }}
             >
               {originalNames[activeDropdown]}
