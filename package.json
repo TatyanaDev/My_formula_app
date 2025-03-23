@@ -1,0 +1,40 @@
+{
+  "name": "formula-input-app",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build"
+  },
+  "dependencies": {
+    "antd": "^5.x",
+    "axios": "^1.x",
+    "react": "^18.x",
+    "react-dom": "^18.x",
+    "react-scripts": "^5.x",
+    "@tanstack/react-query": "^5.x",
+    "zustand": "^4.x",
+    "uuid": "^9.x",
+    "typescript": "^4.x",
+    "@types/react": "^18.x",
+    "@types/react-dom": "^18.x"
+  },
+  "devDependencies": {
+    "@types/node": "^20.x",
+    "@types/uuid": "^9.x",
+    "@types/react": "^18.x",
+    "@types/react-dom": "^18.x"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
